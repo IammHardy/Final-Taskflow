@@ -1,8 +1,12 @@
 <div class="page-header">
   <div>
     <h1 class="page-title">Sectors</h1>
-    <p class="page-subtitle">Departments within <%= current_user.company.name %></p>
-  </div>
+    <p class="page-subtitle">
+ <p class="page-subtitle">
+  <%= current_user.super_admin? ? "All departments across companies" : "Departments within #{current_user.company&.name}" %>
+</p>
+</p>
+    
   <% if current_user.manager_or_above? %>
     <%= link_to "New Sector", new_sector_path, class: "btn-primary" %>
   <% end %>

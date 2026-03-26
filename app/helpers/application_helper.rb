@@ -1,5 +1,11 @@
 module ApplicationHelper
-  
+  def current_user_manager_or_above?
+    current_user&.manager? || current_user&.admin? || current_user&.super_admin?
+  end
+
+  def current_user_admin_or_above?
+    current_user&.admin? || current_user&.super_admin?
+  end
 
   def status_badge(status)
     content_tag :span, status.to_s.humanize.gsub("_", " "), class: "status-#{status}"

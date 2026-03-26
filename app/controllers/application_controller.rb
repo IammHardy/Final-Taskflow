@@ -6,17 +6,19 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_tenant
   before_action :configure_permitted_parameters, if: :devise_controller?
-
-  after_action :verify_authorized,     except: :index, unless: :devise_controller?
-  after_action :verify_policy_scoped,  only:   :index, unless: :devise_controller?
+   after_action :verify_pundit!
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
-  def set_tenant
-    set_current_tenant(current_user.company) if current_user&.company
-  end
+
+def set_tenant
+  return unless current_user
+  return if current_user.super_admin?
+
+  set_current_tenant(current_user.company) if current_user.company.present?
+end
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up,  keys: [:first_name, :last_name, :company_id])
@@ -26,5 +28,15 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_back(fallback_location: root_path)
+  end
+
+  def verify_pundit!
+    return if devise_controller?
+
+    if action_name == "index"
+      verify_policy_scoped
+    else
+      verify_authorized
+    end
   end
 end

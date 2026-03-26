@@ -46,7 +46,8 @@ class Admin::CompaniesController < Admin::BaseController
 
   private
 
-  def set_company = @company = Company.find(params[:id])
+ 
+    def set_company = @company = Company.find_by!(slug: params[:id])
 
   def company_params
     params.require(:company).permit(:name, :slug, :industry, :plan, :active)
