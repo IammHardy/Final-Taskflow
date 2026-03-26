@@ -1,0 +1,57 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Team</h1>
+    <p class="page-subtitle"><%= @users.count rescue 0 %> members</p>
+  </div>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+  <table class="tf-table">
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>Role</th>
+        <th>Sector</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:0.75rem">
+              <div class="avatar avatar-md" style="background:#eef2ff;color:#4338ca"><%= user.initials %></div>
+              <div>
+                <p style="font-weight:500;color:#111827"><%= user.full_name %></p>
+                <p style="font-size:0.75rem;color:#6b7280"><%= user.email %></p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="badge-purple"><%= user.role.humanize %></span>
+          </td>
+          <td style="color:#6b7280"><%= user.sector&.name || "—" %></td>
+          <td>
+            <% if user.active? %>
+              <span class="badge-green">Active</span>
+            <% else %>
+              <span class="badge-gray">Inactive</span>
+            <% end %>
+          </td>
+          <td style="text-align:right">
+            <% if policy(user).edit? %>
+              <%= link_to "Edit", edit_user_path(user), class: "btn-ghost btn-sm" %>
+            <% end %>
+            <% if policy(user).destroy? && user != current_user %>
+              <%= button_to "Remove", user_path(user), method: :delete,
+                  data: { confirm: "Are you sure?" },
+                  class: "btn-ghost btn-sm",
+                  style: "color:#ef4444" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

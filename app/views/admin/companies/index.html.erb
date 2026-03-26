@@ -1,0 +1,40 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Companies</h1>
+    <p class="page-subtitle"><%= @companies.count %> companies</p>
+  </div>
+  <%= link_to "New Company", new_admin_company_path, class: "btn-primary" %>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+  <table class="tf-table">
+    <thead>
+      <tr>
+        <th>Company</th><th>Industry</th><th>Plan</th><th>Users</th><th>Status</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @companies.each do |company| %>
+        <tr>
+          <td style="font-weight:500;color:#111827"><%= company.name %></td>
+          <td style="color:#6b7280"><%= company.industry || "—" %></td>
+          <td><span class="badge-blue"><%= company.plan.humanize %></span></td>
+          <td><%= company.users.count %></td>
+          <td>
+            <% if company.active? %>
+              <span class="badge-green">Active</span>
+            <% else %>
+              <span class="badge-gray">Inactive</span>
+            <% end %>
+          </td>
+          <td style="text-align:right;display:flex;gap:0.5rem;justify-content:flex-end">
+            <%= link_to "Edit", edit_admin_company_path(company), class: "btn-ghost btn-sm" %>
+            <%= button_to "Delete", admin_company_path(company), method: :delete,
+                data: { confirm: "Delete #{company.name}?" },
+                class: "btn-ghost btn-sm", style: "color:#ef4444" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

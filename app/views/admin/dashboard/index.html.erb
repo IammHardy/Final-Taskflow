@@ -1,0 +1,61 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Admin Panel</h1>
+    <p class="page-subtitle">Platform overview</p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
+  <div class="card">
+    <p class="stat-value"><%= @stats[:companies] %></p>
+    <p class="stat-label">Companies</p>
+  </div>
+  <div class="card">
+    <p class="stat-value"><%= @stats[:users] %></p>
+    <p class="stat-label">Total Users</p>
+  </div>
+  <div class="card">
+    <p class="stat-value"><%= @stats[:tasks] %></p>
+    <p class="stat-label">Total Tasks</p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
+      <h2 style="font-weight:600;font-size:0.9rem;color:#111827">Companies</h2>
+      <%= link_to "Manage →", admin_companies_path, class: "btn-primary btn-sm" %>
+    </div>
+    <table class="tf-table">
+      <thead><tr><th>Name</th><th>Plan</th><th>Users</th></tr></thead>
+      <tbody>
+        <% @companies.each do |company| %>
+          <tr>
+            <td style="font-weight:500"><%= company.name %></td>
+            <td><span class="badge-blue"><%= company.plan.humanize %></span></td>
+            <td><%= company.users.count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
+      <h2 style="font-weight:600;font-size:0.9rem;color:#111827">Recent Users</h2>
+      <%= link_to "Manage →", admin_users_path, class: "btn-primary btn-sm" %>
+    </div>
+    <table class="tf-table">
+      <thead><tr><th>Name</th><th>Role</th><th>Company</th></tr></thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td style="font-weight:500"><%= user.full_name %></td>
+            <td><span class="badge-purple"><%= user.role.humanize %></span></td>
+            <td style="color:#6b7280"><%= user.company&.name || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

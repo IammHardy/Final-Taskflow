@@ -1,0 +1,31 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Tasks</h1>
+    <p class="page-subtitle"><%= @tasks.total_count rescue @tasks.count %> tasks</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= link_to ai_suggest_tasks_path, method: :post, data: { turbo_method: :post }, class: "btn-secondary btn-sm" do %>
+      🤖 AI Suggest
+    <% end %>
+    <%= link_to new_task_path, class: "btn-primary" do %>
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      New Task
+    <% end %>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card-sm flex flex-wrap items-center gap-2 mb-6">
+  <%= link_to "All", tasks_path, class: params[:status].blank? ? "btn-primary btn-sm" : "btn-secondary btn-sm" %>
+  <% Task.statuses.keys.each do |s| %>
+    <%= link_to s.humanize, tasks_path(status: s), class: params[:status] == s ? "btn-primary btn-sm" : "btn-secondary btn-sm" %>
+  <% end %>
+  <%= link_to tasks_path(mine: "1"), class: params[:mine] == "1" ? "btn-primary btn-sm" : "btn-secondary btn-sm" do %>My tasks<% end %>
+</div>
+
+<!-- Task list -->
+<div class="space-y-2" id="tasks-list">
+  <% @tasks.each do |task| %>
+    <%= render "tasks/task_row", task: task %>
+  <% end %>
+</div>

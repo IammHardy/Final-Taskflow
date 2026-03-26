@@ -1,0 +1,177 @@
+<div style="max-width:800px;margin:0 auto">
+  <!-- Header -->
+  <div class="page-header">
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+        <%= status_badge(@task.status) %>
+        <%= priority_badge(@task.priority) %>
+        <% if @task.ai_priority_score %>
+          <span class="badge-purple">🤖 AI Score: <%= @task.ai_priority_score %></span>
+        <% end %>
+      </div>
+      <h1 class="page-title"><%= @task.title %></h1>
+    </div>
+    <div style="display:flex;gap:0.5rem">
+      <% if policy(@task).update? %>
+        <%= link_to "Edit", edit_task_path(@task), class: "btn-secondary" %>
+      <% end %>
+      <% if policy(@task).destroy? %>
+        <%= button_to "Delete", @task, method: :delete,
+            data: { confirm: "Delete this task?" }, class: "btn-danger" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:1.5rem">
+    <!-- Main -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem">
+      <!-- Description -->
+      <div class="card">
+        <h2 style="font-weight:600;color:#111827;margin-bottom:0.75rem;font-size:0.9rem">Description</h2>
+        <% if @task.description.present? %>
+          <p style="color:#374151;line-height:1.7"><%= @task.description %></p>
+        <% else %>
+          <p style="color:#9ca3af;font-size:0.875rem">No description provided.</p>
+        <% end %>
+        <% if @task.ai_notes.present? %>
+          <div style="margin-top:1rem;padding:0.75rem;background:#faf5ff;border-radius:0.5rem;border:1px solid #e9d5ff">
+            <p style="font-size:0.75rem;font-weight:600;color:#7e22ce;margin-bottom:0.25rem">🤖 AI Insight</p>
+            <p style="font-size:0.875rem;color:#6b21a8"><%= @task.ai_notes %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Subtasks -->
+      <% if @subtasks.any? %>
+        <div class="card">
+          <h2 style="font-weight:600;color:#111827;margin-bottom:0.75rem;font-size:0.9rem">Subtasks (<%= @subtasks.count %>)</h2>
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+            <% @subtasks.each do |subtask| %>
+              <%= render "tasks/task_row", task: subtask %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Comments -->
+      <div class="card">
+        <h2 style="font-weight:600;color:#111827;margin-bottom:1rem;font-size:0.9rem">Comments (<%= @comments.count %>)</h2>
+        <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem">
+          <% @comments.each do |comment| %>
+            <div style="display:flex;gap:0.75rem">
+              <div class="avatar avatar-sm" style="background:#eef2ff;color:#4338ca;flex-shrink:0;margin-top:0.125rem">
+                <%= comment.user.initials %>
+              </div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+                  <span style="font-size:0.875rem;font-weight:500;color:#111827"><%= comment.user.full_name %></span>
+                  <span style="font-size:0.75rem;color:#9ca3af"><%= time_ago_in_words(comment.created_at) %> ago</span>
+                  <% if comment.ai_generated? %>
+                    <span class="badge-purple" style="font-size:0.65rem">AI</span>
+                  <% end %>
+                </div>
+                <p style="font-size:0.875rem;color:#374151;line-height:1.6"><%= comment.body %></p>
+              </div>
+              <% if policy(comment).destroy? %>
+                <%= button_to task_comment_path(@task, comment), method: :delete,
+                    class: "btn-ghost btn-icon btn-sm", style: "color:#d1d5db;align-self:flex-start" do %>
+                  <svg style="width:0.875rem;height:0.875rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+          <% if @comments.empty? %>
+            <p style="color:#9ca3af;font-size:0.875rem">No comments yet.</p>
+          <% end %>
+        </div>
+
+        <!-- Comment form -->
+        <%= form_with model: [@task, @comment] do |f| %>
+          <div style="display:flex;gap:0.75rem;align-items:flex-start">
+            <div class="avatar avatar-sm" style="background:#eef2ff;color:#4338ca;flex-shrink:0;margin-top:0.25rem">
+              <%= current_user.initials %>
+            </div>
+            <div style="flex:1">
+              <%= f.text_area :body, class: "input", rows: 2,
+                  placeholder: "Add a comment...",
+                  style: "resize:vertical" %>
+              <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
+                <%= f.submit "Comment", class: "btn-primary btn-sm" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Sidebar details -->
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div class="card" style="padding:1.25rem">
+        <h3 style="font-size:0.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1rem">Details</h3>
+
+        <div style="display:flex;flex-direction:column;gap:0.875rem">
+          <div>
+            <p style="font-size:0.75rem;color:#9ca3af;margin-bottom:0.25rem">Assignee</p>
+            <% if @task.assignee %>
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <div class="avatar avatar-sm" style="background:#eef2ff;color:#4338ca"><%= @task.assignee.initials %></div>
+                <span style="font-size:0.875rem;font-weight:500;color:#111827"><%= @task.assignee.full_name %></span>
+              </div>
+            <% else %>
+              <span style="font-size:0.875rem;color:#9ca3af">Unassigned</span>
+            <% end %>
+          </div>
+
+          <div>
+            <p style="font-size:0.75rem;color:#9ca3af;margin-bottom:0.25rem">Created by</p>
+            <span style="font-size:0.875rem;color:#374151"><%= @task.creator.full_name %></span>
+          </div>
+
+          <% if @task.sector %>
+            <div>
+              <p style="font-size:0.75rem;color:#9ca3af;margin-bottom:0.25rem">Sector</p>
+              <span style="font-size:0.875rem;color:#374151"><%= @task.sector.name %></span>
+            </div>
+          <% end %>
+
+          <% if @task.due_date %>
+            <div>
+              <p style="font-size:0.75rem;color:#9ca3af;margin-bottom:0.25rem">Due date</p>
+              <span style="font-size:0.875rem;font-weight:500;color:<%= @task.due_date < Date.today && !@task.done? ? '#ef4444' : '#111827' %>">
+                <%= @task.due_date.strftime("%b %-d, %Y") %>
+                <% if @task.due_date < Date.today && !@task.done? %>
+                  <span style="font-size:0.75rem;color:#ef4444">· Overdue</span>
+                <% end %>
+              </span>
+            </div>
+          <% end %>
+
+          <div>
+            <p style="font-size:0.75rem;color:#9ca3af;margin-bottom:0.25rem">Created</p>
+            <span style="font-size:0.875rem;color:#374151"><%= @task.created_at.strftime("%b %-d, %Y") %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick status update -->
+      <% if policy(@task).update? %>
+        <div class="card" style="padding:1.25rem">
+          <h3 style="font-size:0.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem">Update Status</h3>
+          <div style="display:flex;flex-direction:column;gap:0.375rem">
+            <% Task.statuses.keys.each do |s| %>
+              <%= button_to update_status_task_path(@task),
+                  params: { status: s },
+                  method: :patch,
+                  class: @task.status == s ? "btn-primary btn-sm" : "btn-secondary btn-sm",
+                  style: "justify-content:flex-start" do %>
+                <%= s.humanize.gsub("_", " ") %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

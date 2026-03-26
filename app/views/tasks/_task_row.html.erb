@@ -1,0 +1,44 @@
+<div id="task_<%= task.id %>" class="card-hover flex items-center gap-4 group">
+  <!-- Status toggle -->
+  <% if task.done? %>
+    <%= button_to update_status_task_path(task), params: { status: "todo" }, method: :patch, class: "w-5 h-5 rounded-full bg-green-400 border-2 border-green-400 flex-shrink-0 hover:bg-green-500 transition-colors" do %><% end %>
+  <% else %>
+    <%= button_to update_status_task_path(task), params: { status: "done" }, method: :patch, class: "w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0 hover:border-brand-400 transition-colors" do %><% end %>
+  <% end %>
+
+  <!-- Main content -->
+  <div class="flex-1 min-w-0">
+    <div class="flex items-center gap-2 flex-wrap">
+      <%= link_to task.title, task, class: "text-sm font-medium text-gray-900 hover:text-brand-600 truncate #{task.done? ? 'line-through text-gray-400' : ''}" %>
+      <%= priority_badge(task.priority) %>
+      <% if task.ai_priority_score %>
+        <span class="badge bg-purple-50 text-purple-600 text-xs">🤖 <%= task.ai_priority_score %></span>
+      <% end %>
+    </div>
+    <div class="flex items-center gap-3 mt-1">
+      <%= status_badge(task.status) %>
+      <% if task.sector %>
+        <span class="text-xs text-gray-400"><%= task.sector.name %></span>
+      <% end %>
+      <% if task.due_date %>
+        <span class="text-xs <%= task.due_date < Date.today && !task.done? ? 'text-red-500 font-medium' : 'text-gray-400' %>">
+          Due <%= task.due_date.strftime("%b %-d") %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Assignee avatar -->
+  <% if task.assignee %>
+    <div class="avatar-sm bg-brand-100 text-brand-700 flex-shrink-0" title="<%= task.assignee.full_name %>">
+      <%= task.assignee.initials %>
+    </div>
+  <% end %>
+
+  <!-- Actions (visible on hover) -->
+  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+    <%= link_to edit_task_path(task), class: "btn-ghost btn-icon btn-sm text-gray-400" do %>
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+    <% end %>
+  </div>
+</div>
