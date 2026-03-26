@@ -1,12 +1,11 @@
+
+
 <div class="page-header">
   <div>
     <h1 class="page-title">Sectors</h1>
-    <p class="page-subtitle">
- <p class="page-subtitle">
+   <p class="page-subtitle">
   <%= current_user.super_admin? ? "All departments across companies" : "Departments within #{current_user.company&.name}" %>
 </p>
-</p>
-    
   <% if current_user.manager_or_above? %>
     <%= link_to "New Sector", new_sector_path, class: "btn-primary" %>
   <% end %>
@@ -14,22 +13,25 @@
 
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
   <% @sectors.each do |sector| %>
-    <div class="card-hover">
+    <div class="card-hover" style="cursor:pointer;position:relative">
+      <%= link_to sector_path(sector), style: "position:absolute;inset:0;z-index:1" do %><% end %>
       <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
         <div style="width:2.5rem;height:2.5rem;border-radius:0.5rem;background:<%= sector.color %>20;display:flex;align-items:center;justify-content:center">
           <div style="width:0.75rem;height:0.75rem;border-radius:50%;background:<%= sector.color %>"></div>
         </div>
         <div>
           <p style="font-weight:600;color:#111827"><%= sector.name %></p>
-          <p style="font-size:0.75rem;color:#6b7280"><%= sector.users.count %> members</p>
+          <p style="font-size:0.75rem;color:#6b7280"><%= sector.users.count %> members · <%= sector.tasks.count %> tasks</p>
         </div>
       </div>
       <% if sector.description.present? %>
         <p style="font-size:0.875rem;color:#6b7280;margin-bottom:0.75rem"><%= sector.description %></p>
       <% end %>
-      <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem;position:relative;z-index:2">
         <% if current_user.manager_or_above? %>
           <%= link_to "Edit", edit_sector_path(sector), class: "btn-secondary btn-sm" %>
+        <% end %>
+        <% if current_user.admin_or_above? %>
           <%= button_to "Delete", sector_path(sector), method: :delete,
               data: { confirm: "Delete #{sector.name}?" },
               class: "btn-ghost btn-sm", style: "color:#ef4444" %>

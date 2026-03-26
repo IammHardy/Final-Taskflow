@@ -1,0 +1,50 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">All Users</h1>
+    <p class="page-subtitle"><%= @users.count rescue 0 %> users across all companies</p>
+  </div>
+  <%= link_to(
+      current_user.super_admin? ? new_admin_user_path : new_user_path,
+      class: "btn-primary"
+    ) do %>
+    <svg style="width:1rem;height:1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    New User
+  <% end %>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+  <table class="tf-table">
+    <thead>
+      <tr><th>User</th><th>Role</th><th>Company</th><th>Sector</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:0.75rem">
+              <div class="avatar avatar-sm" style="background:#eef2ff;color:#4338ca"><%= user.initials %></div>
+              <div>
+                <p style="font-weight:500;color:#111827"><%= user.full_name %></p>
+                <p style="font-size:0.75rem;color:#9ca3af"><%= user.email %></p>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge-purple"><%= user.role.humanize %></span></td>
+          <td style="color:#6b7280"><%= user.company&.name || "—" %></td>
+          <td style="color:#6b7280"><%= user.sector&.name || "—" %></td>
+          <td>
+            <%= user.active? ? '<span class="badge-green">Active</span>'.html_safe : '<span class="badge-gray">Inactive</span>'.html_safe %>
+          </td>
+          <td style="text-align:right;white-space:nowrap">
+            <%= link_to "Edit", edit_admin_user_path(user), class: "btn-ghost btn-sm" %>
+            <% if user != current_user %>
+              <%= button_to "Delete", admin_user_path(user), method: :delete,
+                  data: { confirm: "Delete #{user.full_name}?" },
+                  class: "btn-ghost btn-sm", style: "color:#ef4444" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

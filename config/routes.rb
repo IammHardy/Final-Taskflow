@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   resources :sectors
   
   scope "/team" do
-    resources :users, only: [:index, :show, :edit, :update, :destroy], path: ""
+    resources :users, only: [:new, :create,:index, :show, :edit, :update, :destroy], path: ""
   end
 
   resources :notifications, only: [:index] do
@@ -36,4 +36,7 @@ Rails.application.routes.draw do
     resources :companies
     resources :users
   end
+  get  "profile",        to: "profile#show",  as: :profile
+get  "profile/edit",   to: "profile#edit",  as: :edit_profile
+patch "profile",       to: "profile#update", as: :update_profile
 end

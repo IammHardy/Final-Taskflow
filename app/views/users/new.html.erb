@@ -1,0 +1,85 @@
+<div style="max-width:640px;margin:0 auto">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Add Team Member</h1>
+      <p class="page-subtitle">They'll receive a default password to sign in with</p>
+    </div>
+    <%= link_to "← Back", users_path, class: "btn-secondary" %>
+  </div>
+
+  <div class="card">
+    <%= form_with model: @user, url: users_path, local: true do |f| %>
+      <% if @user.errors.any? %>
+        <div class="flash-alert" style="margin-bottom:1.25rem">
+          <svg style="width:1rem;height:1rem;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+          <%= @user.errors.full_messages.first %>
+        </div>
+      <% end %>
+
+      <p style="font-size:0.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1rem">Personal Info</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <%= f.label :first_name, class: "label" %>
+          <%= f.text_field :first_name, class: "input", placeholder: "John", autofocus: true %>
+        </div>
+        <div class="form-group">
+          <%= f.label :last_name, class: "label" %>
+          <%= f.text_field :last_name, class: "input", placeholder: "Doe" %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :email, class: "label" %>
+        <%= f.email_field :email, class: "input", placeholder: "john@company.com" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :phone, class: "label" %>
+        <%= f.text_field :phone, class: "input", placeholder: "+1 555 000 0000" %>
+      </div>
+
+      <div style="height:1px;background:#f3f4f6;margin:1.25rem 0"></div>
+      <p style="font-size:0.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1rem">Role & Access</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <%= f.label :role, class: "label" %>
+          <%= f.select :role,
+              [["Employee", "employee"], ["Manager", "manager"], ["Admin", "admin"]],
+              { selected: "employee" }, { class: "input" } %>
+        </div>
+        <div class="form-group">
+          <%= f.label :sector_id, "Sector", class: "label" %>
+          <%= f.collection_select :sector_id,
+              Sector.where(company: current_user.company).order(:name),
+              :id, :name,
+              { include_blank: "— No sector —", selected: params[:sector_id] },
+              { class: "input" } %>
+        </div>
+      </div>
+
+      <div style="height:1px;background:#f3f4f6;margin:1.25rem 0"></div>
+      <p style="font-size:0.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem">Default Password</p>
+      <p style="font-size:0.8rem;color:#9ca3af;margin-bottom:1rem">Leave blank to auto-generate. The password will be shown to you after creation.</p>
+
+      <div class="form-group">
+        <%= f.label :password, "Password", class: "label" %>
+        <%= f.password_field :password, class: "input",
+            placeholder: "Leave blank to auto-generate",
+            autocomplete: "new-password" %>
+      </div>
+
+      <div style="background:#fafaf9;border:1px solid #f3f4f6;border-radius:0.5rem;padding:0.875rem;margin-bottom:1.25rem">
+        <p style="font-size:0.8rem;color:#6b7280">
+          💡 The user will be able to <strong>change their password</strong> after signing in from their profile settings.
+        </p>
+      </div>
+
+      <div style="display:flex;gap:0.75rem">
+        <%= f.submit "Create Member", class: "btn-primary" %>
+        <%= link_to "Cancel", users_path, class: "btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

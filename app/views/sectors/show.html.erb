@@ -1,0 +1,67 @@
+<div class="page-header">
+  <div>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+      <div style="width:2.5rem;height:2.5rem;border-radius:0.5rem;background:<%= @sector.color %>20;display:flex;align-items:center;justify-content:center">
+        <div style="width:0.75rem;height:0.75rem;border-radius:50%;background:<%= @sector.color %>"></div>
+      </div>
+      <h1 class="page-title"><%= @sector.name %></h1>
+    </div>
+    <p class="page-subtitle"><%= @sector.description.presence || "No description" %> · <%= @sector.users.count %> members</p>
+  </div>
+  <div style="display:flex;gap:0.5rem">
+    <% if current_user.manager_or_above? %>
+      <%= link_to "Edit Sector", edit_sector_path(@sector), class: "btn-secondary" %>
+    <% end %>
+    <% if current_user.admin_or_above? %>
+     <%= link_to "Add Member",
+    (current_user.super_admin? ? new_admin_user_path(company_id: @sector.company_id, sector_id: @sector.id) : new_user_path(sector_id: @sector.id)),
+    class: "btn-primary" %>
+      
+    <% end %>
+  </div>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+  <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6">
+    <h2 style="font-weight:600;font-size:0.9rem;color:#111827">Members</h2>
+  </div>
+  <% if @members.any? %>
+    <table class="tf-table">
+      <thead>
+        <tr><th>Member</th><th>Role</th><th>Tasks</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @members.each do |user| %>
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:0.75rem">
+                <div class="avatar avatar-sm" style="background:#eef2ff;color:#4338ca"><%= user.initials %></div>
+                <div>
+                  <p style="font-weight:500;color:#111827"><%= user.full_name %></p>
+                  <p style="font-size:0.75rem;color:#9ca3af"><%= user.email %></p>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge-purple"><%= user.role.humanize %></span></td>
+            <td style="color:#6b7280"><%= user.assigned_tasks.where.not(status: :done).count %> active</td>
+            <td>
+              <%= user.active? ? '<span class="badge-green">Active</span>'.html_safe : '<span class="badge-gray">Inactive</span>'.html_safe %>
+            </td>
+            <td style="text-align:right">
+              <% if current_user.admin_or_above? %>
+                <%= link_to "Edit", edit_user_path(user), class: "btn-ghost btn-sm" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div style="padding:3rem;text-align:center">
+      <p style="color:#9ca3af;font-size:0.875rem">No members in this sector yet.</p>
+      <% if current_user.admin_or_above? %>
+        <%= link_to "Add first member", new_user_path(sector_id: @sector.id), class: "btn-primary", style: "margin-top:1rem;display:inline-flex" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

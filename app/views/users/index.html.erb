@@ -1,19 +1,33 @@
 <div class="page-header">
   <div>
     <h1 class="page-title">Team</h1>
-    <p class="page-subtitle"><%= @users.count rescue 0 %> members</p>
+   <% company_label = current_user.super_admin? ? "all companies" : current_user.company&.name %>
+<p class="page-subtitle"><%= @pagy.count rescue @users.count %> members in <%= company_label %></p>
   </div>
+  <% if current_user.admin_or_above? %>
+    <%= link_to new_user_path, class: "btn-primary" do %>
+  <svg style="width:1rem;height:1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+  </svg>
+  Add Member
+<% end %>
+  <% end %>
+</div>
+
+<!-- Filter by sector -->
+<div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap">
+  <%= link_to "All", users_path, class: params[:sector_id].blank? ? "btn-primary btn-sm" : "btn-secondary btn-sm" %>
+  <% Sector.where(company: current_user.company).order(:name).each do |sector| %>
+    <%= link_to sector.name, users_path(sector_id: sector.id),
+        class: params[:sector_id] == sector.id.to_s ? "btn-primary btn-sm" : "btn-secondary btn-sm" %>
+  <% end %>
 </div>
 
 <div class="card" style="padding:0;overflow:hidden">
   <table class="tf-table">
     <thead>
       <tr>
-        <th>Member</th>
-        <th>Role</th>
-        <th>Sector</th>
-        <th>Status</th>
-        <th></th>
+        <th>Member</th><th>Role</th><th>Sector</th><th>Active Tasks</th><th>Status</th><th></th>
       </tr>
     </thead>
     <tbody>
@@ -24,31 +38,36 @@
               <div class="avatar avatar-md" style="background:#eef2ff;color:#4338ca"><%= user.initials %></div>
               <div>
                 <p style="font-weight:500;color:#111827"><%= user.full_name %></p>
-                <p style="font-size:0.75rem;color:#6b7280"><%= user.email %></p>
+                <p style="font-size:0.75rem;color:#9ca3af"><%= user.email %></p>
               </div>
             </div>
           </td>
+          <td><span class="badge-purple"><%= user.role.humanize %></span></td>
           <td>
-            <span class="badge-purple"><%= user.role.humanize %></span>
-          </td>
-          <td style="color:#6b7280"><%= user.sector&.name || "—" %></td>
-          <td>
-            <% if user.active? %>
-              <span class="badge-green">Active</span>
+            <% if user.sector %>
+              <span style="display:inline-flex;align-items:center;gap:0.375rem;font-size:0.875rem;color:#374151">
+                <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:<%= user.sector.color %>;display:inline-block"></span>
+                <%= user.sector.name %>
+              </span>
             <% else %>
-              <span class="badge-gray">Inactive</span>
+              <span style="color:#d1d5db">—</span>
             <% end %>
+          </td>
+          <td style="color:#6b7280"><%= user.assigned_tasks.where.not(status: [:done, :cancelled]).count %></td>
+          <td>
+            <%= user.active? ? '<span class="badge-green">Active</span>'.html_safe : '<span class="badge-gray">Inactive</span>'.html_safe %>
           </td>
           <td style="text-align:right">
-            <% if policy(user).edit? %>
-              <%= link_to "Edit", edit_user_path(user), class: "btn-ghost btn-sm" %>
-            <% end %>
-            <% if policy(user).destroy? && user != current_user %>
-              <%= button_to "Remove", user_path(user), method: :delete,
-                  data: { confirm: "Are you sure?" },
-                  class: "btn-ghost btn-sm",
-                  style: "color:#ef4444" %>
-            <% end %>
+            <div style="display:flex;gap:0.25rem;justify-content:flex-end">
+              <% if policy(user).edit? %>
+                <%= link_to "Edit", edit_user_path(user), class: "btn-ghost btn-sm" %>
+              <% end %>
+              <% if policy(user).destroy? && user != current_user %>
+                <%= button_to "Remove", user_path(user), method: :delete,
+                    data: { confirm: "Remove #{user.full_name} from the team?" },
+                    class: "btn-ghost btn-sm", style: "color:#ef4444" %>
+              <% end %>
+            </div>
           </td>
         </tr>
       <% end %>

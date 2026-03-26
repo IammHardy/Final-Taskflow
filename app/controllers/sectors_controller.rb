@@ -23,7 +23,10 @@ class SectorsController < ApplicationController
   end
 
   def edit   = authorize @sector
-  def show   = authorize @sector
+   def show
+    authorize @sector
+    @members = @sector.users.includes(:assigned_tasks).order(:first_name)
+  end
 
   def update
     authorize @sector

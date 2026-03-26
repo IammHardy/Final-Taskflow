@@ -1,0 +1,56 @@
+<div style="max-width:640px;margin:0 auto">
+  <div class="page-header">
+    <h1 class="page-title">Edit Profile</h1>
+    <%= link_to "← Back", profile_path, class: "btn-secondary" %>
+  </div>
+
+  <!-- Profile info -->
+  <div class="card" style="margin-bottom:1rem">
+    <h2 style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:1.25rem">Personal Information</h2>
+    <%= form_with model: @user, url: update_profile_path, method: :patch, local: true do |f| %>
+      <% if @user.errors.any? && !@user.errors[:current_password].any? %>
+        <div class="flash-alert" style="margin-bottom:1.25rem"><%= @user.errors.full_messages.first %></div>
+      <% end %>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group">
+          <%= f.label :first_name, class: "label" %>
+          <%= f.text_field :first_name, class: "input" %>
+        </div>
+        <div class="form-group">
+          <%= f.label :last_name, class: "label" %>
+          <%= f.text_field :last_name, class: "input" %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= f.label :phone, class: "label" %>
+        <%= f.text_field :phone, class: "input", placeholder: "+1 555 000 0000" %>
+      </div>
+      <%= f.submit "Save Profile", class: "btn-primary" %>
+    <% end %>
+  </div>
+
+  <!-- Change password -->
+  <div class="card">
+    <h2 style="font-size:0.875rem;font-weight:600;color:#374151;margin-bottom:0.25rem">Change Password</h2>
+    <p style="font-size:0.8rem;color:#9ca3af;margin-bottom:1.25rem">You'll stay signed in after changing your password.</p>
+
+    <%= form_with model: @user, url: update_profile_path, method: :patch, local: true do |f| %>
+      <% if @user.errors[:current_password].any? %>
+        <div class="flash-alert" style="margin-bottom:1.25rem">Current password <%= @user.errors[:current_password].first %></div>
+      <% end %>
+      <div class="form-group">
+        <label class="label">Current Password</label>
+        <%= f.password_field :current_password, class: "input", placeholder: "Your current password", autocomplete: "current-password" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :password, "New Password", class: "label" %>
+        <%= f.password_field :password, class: "input", placeholder: "Min 6 characters", autocomplete: "new-password" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirm New Password", class: "label" %>
+        <%= f.password_field :password_confirmation, class: "input", placeholder: "Repeat new password", autocomplete: "new-password" %>
+      </div>
+      <%= f.submit "Update Password", class: "btn-primary" %>
+    <% end %>
+  </div>
+</div>
