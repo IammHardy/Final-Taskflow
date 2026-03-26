@@ -4,14 +4,25 @@
     <p class="page-subtitle"><%= @tasks.total_count rescue @tasks.count %> tasks</p>
   </div>
   <div class="flex items-center gap-2">
-    <%= link_to ai_suggest_tasks_path, method: :post, data: { turbo_method: :post }, class: "btn-secondary btn-sm" do %>
-      🤖 AI Suggest
-    <% end %>
-    <%= link_to new_task_path, class: "btn-primary" do %>
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      New Task
-    <% end %>
-  </div>
+  <%= button_to "🤖 AI Suggest",
+                ai_suggest_tasks_path,
+                method: :post,
+                form: { class: "inline-block" },
+                class: "btn-secondary btn-sm" %>
+
+                  <%= button_to "📊 AI Analyze",
+                ai_analyze_workload_path,
+                method: :post,
+                form: { class: "inline-block m-0 p-0" },
+                class: "btn-secondary btn-sm" %>
+
+  <%= link_to new_task_path, class: "btn-primary" do %>
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    New Task
+  <% end %>
+</div>
 </div>
 
 <!-- Filters -->

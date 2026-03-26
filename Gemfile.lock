@@ -251,6 +251,8 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.5)
+    rack-attack (6.8.0)
+      rack (>= 1.0, < 4)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -332,7 +334,7 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
-    ruby-anthropic (0.4.2)
+    ruby-openai (8.3.0)
       event_stream_parser (>= 0.3.0, < 2.0.0)
       faraday (>= 1)
       faraday-multipart (>= 1)
@@ -433,10 +435,11 @@ DEPENDENCIES
   propshaft
   puma (>= 5.0)
   pundit
+  rack-attack
   rails (~> 8.0.5)
   ransack
   rubocop-rails-omakase
-  ruby-anthropic
+  ruby-openai
   solid_cable
   solid_cache
   solid_queue

@@ -1,8 +1,9 @@
 <%# locals: (value:, label:, icon:, color: "brand") %>
-<div class="card">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
-    <span style="font-size:1.5rem"><%= icon %></span>
+<div class="card p-4 sm:p-5 min-w-0">
+  <div class="flex items-center justify-between gap-3 mb-3">
+    <span class="text-2xl flex-shrink-0"><%= icon %></span>
   </div>
-  <p class="stat-value"><%= value %></p>
-  <p class="stat-label"><%= label %></p>
+
+  <p class="text-2xl sm:text-3xl font-semibold text-gray-900 leading-none"><%= value %></p>
+  <p class="mt-2 text-sm text-gray-500"><%= label %></p>
 </div>

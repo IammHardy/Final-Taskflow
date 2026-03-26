@@ -1,122 +1,105 @@
 puts "Seeding..."
 
 # Companies
-company = Company.create!(
-  name:     "Acme Corp",
-  slug:     "acme-corp",
-  plan:     :pro,
-  industry: "Technology"
-)
+company = Company.find_or_create_by!(slug: "acme-corp") do |c|
+  c.name     = "Acme Corp"
+  c.plan     = :pro
+  c.industry = "Technology"
+end
 
 # Sectors
-engineering = Sector.create!(name: "Engineering",      company: company, color: "#6366f1")
-marketing   = Sector.create!(name: "Marketing",        company: company, color: "#f59e0b")
-hr          = Sector.create!(name: "Human Resources",  company: company, color: "#10b981")
+engineering = Sector.find_or_create_by!(name: "Engineering", company: company) do |s|
+  s.color = "#6366f1"
+end
 
-# Super admin — no company (platform-level user)
-super_admin = User.new(
-  email:      "super@taskflow.com",
-  password:   "password123",
-  first_name: "Super",
-  last_name:  "Admin",
-  role:       :super_admin
-)
-super_admin.save!(validate: false)
+marketing = Sector.find_or_create_by!(name: "Marketing", company: company) do |s|
+  s.color = "#f59e0b"
+end
+
+hr = Sector.find_or_create_by!(name: "Human Resources", company: company) do |s|
+  s.color = "#10b981"
+end
+
+# Super admin
+super_admin = User.find_or_initialize_by(email: "super@taskflow.com")
+if super_admin.new_record?
+  super_admin.first_name = "Super"
+  super_admin.last_name  = "Admin"
+  super_admin.role       = :super_admin
+  super_admin.password   = "password123"
+  super_admin.save!(validate: false)
+end
 
 # Company admin
-admin = User.create!(
-  email:      "admin@acme.com",
-  password:   "password123",
-  first_name: "Alice",
-  last_name:  "Admin",
-  role:       :admin,
-  company:    company
-)
+admin = User.find_or_create_by!(email: "admin@acme.com") do |u|
+  u.first_name = "Alice"
+  u.last_name  = "Admin"
+  u.role       = :admin
+  u.company    = company
+  u.password   = "password123"
+end
 
 # Manager
-mgr1 = User.create!(
-  email:      "manager@acme.com",
-  password:   "password123",
-  first_name: "Bob",
-  last_name:  "Manager",
-  role:       :manager,
-  company:    company,
-  sector:     engineering
-)
+mgr = User.find_or_create_by!(email: "manager@acme.com") do |u|
+  u.first_name = "Bob"
+  u.last_name  = "Manager"
+  u.role       = :manager
+  u.company    = company
+  u.sector     = engineering
+  u.password   = "password123"
+end
 
 # Employees
-emp1 = User.create!(
-  email:      "john@acme.com",
-  password:   "password123",
-  first_name: "John",
-  last_name:  "Doe",
-  role:       :employee,
-  company:    company,
-  sector:     engineering
-)
+emp1 = User.find_or_create_by!(email: "john@acme.com") do |u|
+  u.first_name = "John"
+  u.last_name  = "Doe"
+  u.role       = :employee
+  u.company    = company
+  u.sector     = engineering
+  u.password   = "password123"
+end
 
-emp2 = User.create!(
-  email:      "jane@acme.com",
-  password:   "password123",
-  first_name: "Jane",
-  last_name:  "Smith",
-  role:       :employee,
-  company:    company,
-  sector:     marketing
-)
+emp2 = User.find_or_create_by!(email: "jane@acme.com") do |u|
+  u.first_name = "Jane"
+  u.last_name  = "Smith"
+  u.role       = :employee
+  u.company    = company
+  u.sector     = marketing
+  u.password   = "password123"
+end
 
 # Sample tasks
 ActsAsTenant.with_tenant(company) do
-  Task.create!(
-    title:       "Set up CI/CD pipeline",
-    description: "Configure GitHub Actions for automated testing and deployment",
-    status:      :in_progress,
-    priority:    :high,
-    creator:     mgr1,
-    assignee:    emp1,
-    sector:      engineering,
-    due_date:    3.days.from_now,
-    company:     company
-  )
+  Task.find_or_create_by!(title: "Set up CI/CD pipeline", company: company) do |t|
+    t.description = "Configure GitHub Actions"
+    t.status      = :in_progress
+    t.priority    = :high
+    t.creator     = mgr
+    t.assignee    = emp1
+    t.sector      = engineering
+    t.due_date    = 3.days.from_now
+  end
 
-  Task.create!(
-    title:       "Q3 Marketing campaign",
-    description: "Plan and execute social media push for Q3",
-    status:      :todo,
-    priority:    :medium,
-    creator:     admin,
-    assignee:    emp2,
-    sector:      marketing,
-    due_date:    1.week.from_now,
-    company:     company
-  )
+  Task.find_or_create_by!(title: "Q3 Marketing campaign", company: company) do |t|
+    t.description = "Plan social media push"
+    t.status      = :todo
+    t.priority    = :medium
+    t.creator     = admin
+    t.assignee    = emp2
+    t.sector      = marketing
+    t.due_date    = 1.week.from_now
+  end
 
-  Task.create!(
-    title:       "Update onboarding docs",
-    description: "Revise employee handbook with new policies",
-    status:      :review,
-    priority:    :low,
-    creator:     admin,
-    assignee:    emp1,
-    sector:      hr,
-    due_date:    2.weeks.from_now,
-    company:     company
-  )
-
-  Task.create!(
-    title:       "Fix login session bug",
-    description: "Users reporting random session drops on mobile",
-    status:      :todo,
-    priority:    :urgent,
-    creator:     mgr1,
-    assignee:    emp1,
-    sector:      engineering,
-    due_date:    1.day.from_now,
-    company:     company
-  )
+  Task.find_or_create_by!(title: "Fix login session bug", company: company) do |t|
+    t.description = "Users reporting random session drops"
+    t.status      = :todo
+    t.priority    = :urgent
+    t.creator     = mgr
+    t.assignee    = emp1
+    t.sector      = engineering
+    t.due_date    = 1.day.from_now
+  end
 end
 
 puts "Done!"
 puts "Login: admin@acme.com / password123"
-puts "Manager: manager@acme.com / password123"
-puts "Employee: john@acme.com / password123"

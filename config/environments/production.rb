@@ -38,7 +38,7 @@ Rails.application.configure do
   config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+ 
 
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/up"
@@ -87,4 +87,8 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
+config.assets.compile = false
+config.log_level = :info
+
 end

@@ -66,8 +66,7 @@ gem "pundit"
 # Multi-tenancy
 gem "acts_as_tenant"
 
-# AI
-gem "ruby-anthropic"          # Anthropic Claude API
+
 
 
 # Utilities
@@ -88,3 +87,8 @@ group :development do
   gem "error_highlight", ">= 0.4.0", platforms: [:ruby]
   gem "annotate"
 end
+
+gem "ruby-openai"
+gem "rack-attack"
+
+gem "dotenv-rails", groups: [:development, :test]

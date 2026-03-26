@@ -1,4 +1,4 @@
-<div class="page-header">
+<div class="page-header flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
   <div>
     <h1 class="page-title">Good <%= greeting %>, <%= current_user.first_name %> 👋</h1>
     <p class="page-subtitle">
@@ -6,14 +6,14 @@
   <%= current_user.super_admin? ? "System Admin" : current_user.company&.name %>
 </p>
   </div>
-  <%= link_to new_task_path, class: "btn-primary" do %>
+  <%= link_to new_task_path, class: "btn-primary w-full lg:w-auto justify-center" do %>
     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
     New Task
   <% end %>
 </div>
 
 <!-- Stats row -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
   <%= render "dashboard/stat_card", value: @stats[:total_tasks],    label: "Total Tasks",    icon: "📋", color: "brand" %>
   <%= render "dashboard/stat_card", value: @stats[:my_tasks],       label: "Assigned to me", icon: "👤", color: "blue" %>
   <%= render "dashboard/stat_card", value: @stats[:overdue],        label: "Overdue",        icon: "⚠️", color: "red" %>

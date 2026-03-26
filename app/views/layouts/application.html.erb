@@ -9,17 +9,29 @@
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
 </head>
-<body class="h-full">
+<body class="min-h-screen bg-gray-50">
   <% if user_signed_in? %>
-    <%= render "layouts/sidebar" %>
-    <div class="main-content">
-      <div class="page-wrapper">
-        <%= render "layouts/flash" %>
-        <%= yield %>
+    <%= render "layouts/mobile_nav" %>
+
+    <div class="hidden lg:flex min-h-screen">
+      <div class="w-64 shrink-0">
+        <%= render "layouts/sidebar" %>
       </div>
+
+      <main class="flex-1 min-w-0">
+        <div class="px-6 py-6 lg:px-8 lg:py-8">
+          <%= render "layouts/flash" %>
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+
+    <div class="lg:hidden px-4 py-4">
+      <%= render "layouts/flash" %>
+      <%= yield %>
     </div>
   <% else %>
-    <div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-indigo-50 flex items-center justify-center">
+    <div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <%= yield %>
     </div>
   <% end %>
