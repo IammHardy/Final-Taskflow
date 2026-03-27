@@ -91,4 +91,6 @@ Rails.application.configure do
 config.assets.compile = false
 config.log_level = :info
 
+config.secret_key_base = ENV["SECRET_KEY_BASE"]
+
 end
