@@ -16,7 +16,13 @@ SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
 echo "==> Cleaning old assets"
 bundle exec rails assets:clean
 
-echo "==> Running migrations"
+echo "==> Running primary migrations"
 bundle exec rails db:migrate
+
+echo "==> Running cache migrations"
+bundle exec rails db:migrate:cache
+
+echo "==> Running queue migrations"
+bundle exec rails db:migrate:queue
 
 echo "==> Done"

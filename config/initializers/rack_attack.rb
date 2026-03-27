@@ -1,3 +1,5 @@
+# Use memory store for rate limiting to avoid solid_cache dependency
+Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
 class Rack::Attack
   # Allow all local traffic
   safelist("allow-localhost") do |req|
