@@ -85,6 +85,7 @@ Rails.application.configure do
   #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
   # ]
   #
+  config.secret_key_base = ENV["SECRET_KEY_BASE"]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
