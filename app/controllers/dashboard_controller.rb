@@ -1,12 +1,8 @@
 class DashboardController < ApplicationController
   def index
     skip_authorization
-    
-    # dashboard is always accessible to any signed-in user
-     company = current_user.company || Company.first
-      ai_service = AiService.new(company)
-       @daily_summary = ai_service.daily_summary(current_user)
 
+    # dashboard is always accessible to any signed-in user
     @stats = {
       total_tasks:    policy_scope(Task).count,
       my_tasks:       policy_scope(Task).assigned_to(current_user).count,
@@ -23,9 +19,11 @@ class DashboardController < ApplicationController
 
     # AI daily summary (cached 1hr per user)
     if current_user.manager_or_above?
-      @ai_summary = Rails.cache.fetch("ai_summary_#{current_user.id}", expires_in: 1.hour) do
-        AiService.new(current_user.company).daily_summary(current_user)
-      end
+      # Enqueue background job to refresh summary if cache is empty or expired
+      AiDailySummaryJob.perform_later(current_user.id)
+
+      # Read from cache (instant), will be nil first time
+      @ai_summary = Rails.cache.read("ai_summary_#{current_user.id}")
     end
   end
 end
