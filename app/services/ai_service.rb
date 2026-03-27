@@ -40,31 +40,34 @@ class AiService
   end
 
   # Daily summary for a manager
-  def daily_summary(user)
-    scope  = Task.where(company: @company).where.not(status: [:done, :cancelled])
-    total  = scope.count
-    overdue   = scope.overdue.count
-    due_today = scope.due_today.count
-    in_progress = scope.in_progress.count
-    urgent = scope.urgent.count
+def daily_summary(user)
+  scope       = Task.where(company: @company).where.not(status: [:done, :cancelled])
+  total       = scope.count
+  overdue     = scope.overdue.count
+  due_today   = scope.due_today.count
+  in_progress = scope.in_progress.count
+  urgent      = scope.urgent.count
 
-    prompt = <<~PROMPT
-      Generate a brief daily summary for #{user.full_name}, a #{user.role.humanize} at #{@company.name}.
+  company_name = @company&.name || "No Company Assigned"
 
-      Task stats:
-      - Active tasks: #{total}
-      - Overdue: #{overdue}
-      - Due today: #{due_today}
-      - In progress: #{in_progress}
-      - Urgent: #{urgent}
+  prompt = <<~PROMPT
+    Generate a brief daily summary for #{user.full_name}, a #{user.role.humanize} at #{company_name}.
 
-      Write 2-3 sentences summarizing the situation and give 2 short recommendations.
-      Respond with this exact JSON:
-      {"summary": "...", "key_alerts": ["alert1", "alert2"], "recommendations": ["rec1", "rec2"]}
-    PROMPT
-    call_api(prompt)
-  end
+    Task stats:
+    - Active tasks: #{total}
+    - Overdue: #{overdue}
+    - Due today: #{due_today}
+    - In progress: #{in_progress}
+    - Urgent: #{urgent}
 
+    Write 2-3 sentences summarizing the situation and give 2 short recommendations.
+    Respond with this exact JSON:
+    {"summary": "...", "key_alerts": ["alert1", "alert2"], "recommendations": ["rec1", "rec2"]}
+  PROMPT
+
+  call_api(prompt)
+end
+ 
   # Analyze workload across team members
   def analyze_workload
     users = User.where(company: @company).where(role: [:employee, :manager])

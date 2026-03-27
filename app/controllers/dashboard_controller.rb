@@ -1,6 +1,11 @@
 class DashboardController < ApplicationController
   def index
-    skip_authorization  # dashboard is always accessible to any signed-in user
+    skip_authorization
+    
+    # dashboard is always accessible to any signed-in user
+     company = current_user.company || Company.first
+      ai_service = AiService.new(company)
+       @daily_summary = ai_service.daily_summary(current_user)
 
     @stats = {
       total_tasks:    policy_scope(Task).count,
