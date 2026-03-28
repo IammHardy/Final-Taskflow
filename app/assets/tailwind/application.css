@@ -210,3 +210,16 @@ body {
   justify-content: space-between;
   margin-bottom: 1.5rem;
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 1023px) {
+  .main-content  { margin-left: 0 !important; }
+  .page-wrapper  { padding: 1rem; }
+  .page-header   { flex-wrap: wrap; gap: 0.75rem; }
+  .tf-table th,
+  .tf-table td   { padding: 0.625rem 0.75rem; }
+}
+
+@media (min-width: 1024px) {
+  #mobile-topbar { display: none !important; }
+}
