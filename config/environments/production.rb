@@ -26,7 +26,7 @@ Rails.application.configure do
   config.active_job.queue_adapter = :async
 
   # Action Cable — async (no Solid Cable needed)
-  config.action_cable.adapter = :async
+  config.action_cable.cable = { "adapter" => "async" }
 
   # Mailer
   config.action_mailer.perform_caching = false

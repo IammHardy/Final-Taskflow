@@ -109,7 +109,6 @@ GEM
     drb (2.2.3)
     ed25519 (1.4.0)
     erb (6.0.2)
-    error_highlight (0.7.1)
     erubi (1.13.1)
     event_stream_parser (1.0.0)
     factory_bot (6.5.6)
@@ -401,7 +400,6 @@ DEPENDENCIES
   debug
   devise
   dotenv-rails
-  error_highlight (>= 0.4.0)
   factory_bot_rails
   faker
   image_processing (~> 1.2)
