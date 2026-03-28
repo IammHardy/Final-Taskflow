@@ -9,38 +9,57 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
+  <style>
+    #sidebar-wrapper { transition: transform 0.25s ease; }
+    @media (max-width: 1023px) {
+      #sidebar-wrapper { transform: translateX(-100%) !important; }
+      #sidebar-wrapper.open { transform: translateX(0) !important; }
+      #main-wrapper { margin-left: 0 !important; }
+    }
+    @media (min-width: 1024px) {
+      #sidebar-wrapper { transform: translateX(0) !important; }
+      #mobile-topbar { display: none !important; }
+      #main-wrapper { margin-left: 16rem !important; }
+      #sidebar-overlay { display: none !important; }
+    }
+  </style>
 </head>
-<body style="height:100%;margin:0;padding:0;background:#f9fafb">
+<body style="margin:0;padding:0;background:#f9fafb">
   <% if user_signed_in? %>
 
-    <!-- Mobile overlay -->
+    <!-- Dark overlay for mobile -->
     <div id="sidebar-overlay"
          onclick="closeSidebar()"
-         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:20"></div>
+         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:20;backdrop-filter:blur(2px)">
+    </div>
 
     <!-- Sidebar -->
     <div id="sidebar-wrapper"
-         style="position:fixed;top:0;left:0;bottom:0;width:16rem;z-index:30;transform:translateX(-100%);transition:transform 0.25s ease">
+         style="position:fixed;top:0;left:0;bottom:0;width:16rem;z-index:30">
       <%= render "layouts/sidebar" %>
     </div>
 
     <!-- Mobile top bar -->
     <div id="mobile-topbar"
-         style="display:none;position:sticky;top:0;z-index:10;background:white;border-bottom:1px solid #f3f4f6;padding:0.875rem 1rem;align-items:center;justify-content:space-between">
-      <button onclick="openSidebar()" style="background:none;border:none;cursor:pointer;padding:0.25rem;border-radius:0.375rem;color:#374151">
+         style="position:sticky;top:0;z-index:10;background:white;border-bottom:1px solid #f3f4f6;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between">
+      <button onclick="openSidebar()"
+              style="background:none;border:none;cursor:pointer;padding:0.375rem;border-radius:0.5rem;color:#374151;display:flex;align-items:center">
         <svg style="width:1.5rem;height:1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
       <div style="display:flex;align-items:center;gap:0.5rem">
         <div style="width:1.75rem;height:1.75rem;border-radius:0.375rem;background:#6366f1;display:flex;align-items:center;justify-content:center">
-          <svg style="width:1rem;height:1rem;color:white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg style="width:1rem;height:1rem" fill="none" viewBox="0 0 24 24" stroke="white">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
           </svg>
         </div>
-        <span style="font-weight:700;font-size:0.875rem;color:#111827">TaskFlow</span>
+        <span style="font-weight:700;font-size:0.9rem;color:#111827">TaskFlow</span>
       </div>
-      <div style="width:2rem"></div>
+      <!-- Current user initials -->
+      <div style="width:2rem;height:2rem;border-radius:9999px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600">
+        <%= current_user.initials %>
+      </div>
     </div>
 
     <!-- Main content -->
@@ -53,46 +72,36 @@
 
     <script>
       function openSidebar() {
-        document.getElementById('sidebar-wrapper').style.transform = 'translateX(0)';
-        document.getElementById('sidebar-overlay').style.display = 'block';
+        var sidebar = document.getElementById('sidebar-wrapper');
+        var overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.add('open');
+        overlay.style.display = 'block';
         document.body.style.overflow = 'hidden';
       }
 
       function closeSidebar() {
-        document.getElementById('sidebar-wrapper').style.transform = 'translateX(-100%)';
-        document.getElementById('sidebar-overlay').style.display = 'none';
+        var sidebar = document.getElementById('sidebar-wrapper');
+        var overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.remove('open');
+        overlay.style.display = 'none';
         document.body.style.overflow = '';
       }
 
-      function handleResize() {
-        const isMobile = window.innerWidth < 1024;
-        const topbar   = document.getElementById('mobile-topbar');
-        const wrapper  = document.getElementById('main-wrapper');
-
-        if (isMobile) {
-          topbar.style.display  = 'flex';
-          wrapper.style.marginLeft = '0';
-          // Keep sidebar hidden on mobile unless opened
-        } else {
-          topbar.style.display  = 'none';
-          wrapper.style.marginLeft = '16rem';
-          // Always show sidebar on desktop
-          document.getElementById('sidebar-wrapper').style.transform = 'translateX(0)';
-          document.getElementById('sidebar-overlay').style.display = 'none';
-          document.body.style.overflow = '';
-        }
-      }
-
-      // Run on load and resize
-      handleResize();
-      window.addEventListener('resize', handleResize);
-
-      // Close sidebar on navigation (Turbo)
+      // Close sidebar after navigation on mobile
       document.addEventListener('turbo:load', function() {
         if (window.innerWidth < 1024) {
           closeSidebar();
         }
-        handleResize();
+      });
+
+      // Handle swipe to close on mobile
+      var touchStartX = 0;
+      document.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+      });
+      document.addEventListener('touchend', function(e) {
+        var diff = touchStartX - e.changedTouches[0].clientX;
+        if (diff > 60) { closeSidebar(); }
       });
     </script>
 

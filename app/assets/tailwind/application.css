@@ -213,7 +213,6 @@ body {
 
 /* ── Mobile responsive ── */
 @media (max-width: 1023px) {
-  .main-content  { margin-left: 0 !important; }
   .page-wrapper  { padding: 1rem; }
   .page-header   { flex-wrap: wrap; gap: 0.75rem; }
   .tf-table th,
