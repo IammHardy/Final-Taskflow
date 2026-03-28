@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "favicon.ico", to: proc { [204, {}, []] }
+get "meta.json",   to: proc { [204, {}, []] }
   get "up" => "rails/health#show", as: :rails_health_check
   devise_for :users, controllers: {
     sessions:      "users/sessions",

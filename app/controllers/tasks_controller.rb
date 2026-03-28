@@ -22,19 +22,17 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task = Task.new(task_params)
-    @task.company = current_user.company
-    @task.creator = current_user
-    authorize @task
+  @task = Task.new(task_params)
+  @task.company = current_user.company
+  @task.creator = current_user
+  authorize @task
 
-    if @task.save
-      # Async: score priority with AI
-      AiPriorityJob.perform_later(@task.id)
-      redirect_to @task, notice: "Task created successfully."
-    else
-      render :new, status: :unprocessable_entity
-    end
+  if @task.save
+    redirect_to @task, notice: "Task created successfully."
+  else
+    render :new, status: :unprocessable_entity
   end
+end
 
   def edit = authorize @task
 
