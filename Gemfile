@@ -33,7 +33,7 @@ gem "rack-attack"
 # Utilities
 gem "ransack"
 gem "noticed"
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
 
 # Deploy
 gem "kamal", require: false
